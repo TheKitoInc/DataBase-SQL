@@ -14,23 +14,22 @@
  */
 
 namespace BLKTech\DataBase\SQL\Driver;
-use BLKTech\DataBase\Exception\ConnectException;
-use BLKTech\DataBase\Exception\SelectDBException;
-use BLKTech\DataBase\Exception\ConnectionClosedException;
-use BLKTech\DataBase\Exception\CommandException;
-use BLKTech\DataBase\Exception\GetResultSetException;
-use BLKTech\DataBase\Exception\SelectException;
-use BLKTech\DataBase\Exception\InsertException;
-use BLKTech\DataBase\Exception\UpdateException;
-use BLKTech\DataBase\Exception\DeleteException;
-use BLKTech\DataBase\Exception\TooManyRowsException;
+use BLKTech\DataBase\SQL\Exception\ConnectException;
+use BLKTech\DataBase\SQL\Exception\SelectDBException;
+use BLKTech\DataBase\SQL\Exception\ConnectionClosedException;
+use BLKTech\DataBase\SQL\Exception\CommandException;
+use BLKTech\DataBase\SQL\Exception\GetResultSetException;
+use BLKTech\DataBase\SQL\Exception\SelectException;
+use BLKTech\DataBase\SQL\Exception\InsertException;
+use BLKTech\DataBase\SQL\Exception\UpdateException;
+use BLKTech\DataBase\SQL\Exception\DeleteException;
+use BLKTech\DataBase\SQL\Exception\TooManyRowsException;
 use BLKTech\Exception\NotImplementedException;
 
 /**
  *
  * @author TheKito < blankitoracing@gmail.com >
  */
-
 
 class MsSQL extends \BLKTech\DataBase\Driver
 {

@@ -15,12 +15,12 @@
 
 namespace BLKTech\DataBase\SQL\Driver;
 use \mysqli;
-use BLKTech\DataBase\Exception\ConnectException;
-use BLKTech\DataBase\Exception\CommandException;
-use BLKTech\DataBase\Exception\SelectException;
-use BLKTech\DataBase\Exception\InsertException;
-use BLKTech\DataBase\Exception\UpdateException;
-use BLKTech\DataBase\Exception\DeleteException;
+use BLKTech\DataBase\SQL\Exception\ConnectException;
+use BLKTech\DataBase\SQL\Exception\CommandException;
+use BLKTech\DataBase\SQL\Exception\SelectException;
+use BLKTech\DataBase\SQL\Exception\InsertException;
+use BLKTech\DataBase\SQL\Exception\UpdateException;
+use BLKTech\DataBase\SQL\Exception\DeleteException;
 
 /**
  *

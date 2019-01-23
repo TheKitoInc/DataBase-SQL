@@ -16,6 +16,7 @@
 namespace BLKTech\DataBase\SQL;
 use BLKTech\DataBase\SQL\Exception\InsertException;
 use BLKTech\DataBase\SQL\Exception\TooManyRowsException;
+
 /**
  *
  * @author TheKito < blankitoracing@gmail.com >

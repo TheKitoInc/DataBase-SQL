@@ -13,7 +13,7 @@
  *
  */
 
-namespace BLKTech\DataBase\SQL\Exception;
+namespace BLKTech\DataBase\SQL\Driver;
 
 /**
  *

@@ -13,13 +13,13 @@
  *
  */
 
-namespace BLKTech\DataBase\SQL\Exception;
+namespace BLKTech\DataBase\SQL;
 
 /**
  *
  * @author TheKito < blankitoracing@gmail.com >
  */
  
-class Exception extends \BLKTech\DataBase\SQL\Exception {
+class Exception extends \BLKTech\DataBase\Exception {
 
 }

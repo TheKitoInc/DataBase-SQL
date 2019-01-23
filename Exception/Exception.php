@@ -12,6 +12,7 @@
  * GNU Lesser General Public License for more details.
  *
  */
+ 
 namespace BLKTech\DataBase\Exception;
 
 /**

@@ -31,7 +31,7 @@ use BLKTech\Exception\NotImplementedException;
  * @author TheKito < blankitoracing@gmail.com >
  */
 
-class MsSQL extends \BLKTech\DataBase\Driver
+class MsSQL extends \BLKTech\DataBase\SQL\Driver
 {
     private $server;
     private $user;

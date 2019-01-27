@@ -143,4 +143,17 @@ abstract class Driver {
 
         return false;
     }    
+    
+    public function getTablesWithPrefix($prefix)
+    {
+        $prefixLen = strlen($prefix);
+        
+        $_ =array();
+        
+        foreach ($this->getTables() as $table)
+            if(substr($table, 0, $prefixLen) == $prefix)
+                    $_[] = $table;
+            
+        return $_;
+    }
 }

@@ -15,6 +15,7 @@
 
 namespace BLKTech\DataBase\SQL\Driver\MySQL;
 use \BLKTech\DataBase\SQL\Driver\MySQL;
+use BLKTech\DataType\Integer;
 
 /**
  *
@@ -45,7 +46,7 @@ class Dynamic
     public function get($tablePrefix, $id) 
     {
         $id_ = Integer::unSignedInt64UnCombineIntoInt32($id);
-        return $this->driver->getRow($tablePrefix . $id_[0],array('id'=>$id_[1]));        
+        return $this->driver->getRow($tablePrefix . $id_[0], array(), array('id'=>$id_[1]));        
     }    
     
     public function set($tablePrefix, $idHigh, $data = array()) 

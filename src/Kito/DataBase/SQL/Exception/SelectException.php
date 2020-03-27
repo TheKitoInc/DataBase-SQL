@@ -13,13 +13,13 @@
  *
  */
 
-namespace Kito\DataBase;
+namespace Kito\DataBase\SQL\Exception;
 
 /**
  *
  * @author TheKito < blankitoracing@gmail.com >
  */
- 
-class Exception extends \Kito\Exception {
 
+class SelectException extends Exception{
+    //put your code here
 }

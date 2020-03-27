@@ -13,13 +13,13 @@
  *
  */
 
-namespace Kito\DataBase;
+namespace Kito\DataBase\SQL\Driver;
 
 /**
  *
  * @author TheKito < blankitoracing@gmail.com >
  */
  
-class Exception extends \Kito\Exception {
+class Exception extends \Kito\DataBase\SQL\Exception {
 
 }

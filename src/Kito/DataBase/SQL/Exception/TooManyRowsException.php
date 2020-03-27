@@ -13,13 +13,13 @@
  *
  */
 
-namespace Kito\DataBase;
+namespace Kito\RDB\SQL\Exception;
 
 /**
  *
  * @author TheKito < blankitoracing@gmail.com >
  */
- 
-class Exception extends \Kito\Exception {
 
+class TooManyRowsException extends Exception{
+    //put your code here
 }

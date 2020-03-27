@@ -144,7 +144,7 @@ class MySQL extends \Kito\DataBase\SQL\Driver
 
             $t = round(microtime(true) - $t, 3);
             
-            \Logger::getInstance()->debug("QUERY ($t): " . $query);
+            \Kito\Logger::getInstance()->debug("QUERY ($t): " . $query);
 
             return $rs;
         } catch (Exception $e) {
@@ -162,7 +162,7 @@ class MySQL extends \Kito\DataBase\SQL\Driver
 
             $t = round(microtime(true) - $t, 3);
 
-            \Logger::getInstance()->debug("COMMAND ($t): " . $command);
+            \Kito\Logger::getInstance()->debug("COMMAND ($t): " . $command);
 
             return true;
         } catch (Exception $e) {

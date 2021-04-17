@@ -20,6 +20,6 @@ namespace Kito\DataBase\SQL\Exception;
  * @author TheKito < blankitoracing@gmail.com >
  */
  
-class Exception extends \Kito\DataBase\SQL\Exception {
-
+class Exception extends \Kito\DataBase\SQL\Exception
+{
 }

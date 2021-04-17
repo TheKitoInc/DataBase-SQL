@@ -14,6 +14,7 @@
  */
 
 namespace Kito\DataBase\SQL;
+
 use Kito\DataBase\SQL\Exception\ConnectException;
 use Kito\DataBase\SQL\Exception\SelectDBException;
 use Kito\DataBase\SQL\Exception\ConnectionClosedException;
@@ -40,7 +41,7 @@ class MsSQL extends \Kito\DataBase\SQL\Driver
     
     private $cnn = null;
     
-    function __construct($server, $user, $password, $scheme)
+    public function __construct($server, $user, $password, $scheme)
     {
         $this->server = $server;
         $this->user = $user;
@@ -52,32 +53,30 @@ class MsSQL extends \Kito\DataBase\SQL\Driver
 
     public function connect()
     {
-        if($this->isConnected())
-            $this->close ();
+        if ($this->isConnected()) {
+            $this->close();
+        }
         
         $this->cnn = @mssql_connect($this->server, $this->user, $this->password);
 
-        if($this->cnn===false)
-        {
+        if ($this->cnn===false) {
             $this->cnn = null;
-            throw new ConnectException($this->server, $this->user, mssql_get_last_message(),-1);            
+            throw new ConnectException($this->server, $this->user, mssql_get_last_message(), -1);
         }
          
         
-        if (!@mssql_select_db($this->scheme, $this->cnn))
-        {
+        if (!@mssql_select_db($this->scheme, $this->cnn)) {
             @mssql_close($this->cnn);
             $this->cnn = null;
-            throw new SelectDBException($this->scheme, mssql_get_last_message(), -1);            
-        }        
-        
-        
+            throw new SelectDBException($this->scheme, mssql_get_last_message(), -1);
+        }
     }
     
     public function close()
     {
-        if(!$this->isConnected())
+        if (!$this->isConnected()) {
             return;
+        }
         
         @mssql_close($this->cnn);
         $this->cnn = null;
@@ -90,38 +89,42 @@ class MsSQL extends \Kito\DataBase\SQL\Driver
     
     public function __destruct()
     {
-        if($this->isConnected())
+        if ($this->isConnected()) {
             $this->close();
+        }
     }
 
     private function sendCommand($sql)
     {
-        if(!$this->isConnected())
-            throw new ConnectionClosedException ();            
+        if (!$this->isConnected()) {
+            throw new ConnectionClosedException();
+        }
         
         $RS = @mssql_query($sql, $this->cnn);
 
-        if($RS===FALSE)    
-            throw new CommandException ($sql, @mssql_get_last_message(), -1);            
+        if ($RS===false) {
+            throw new CommandException($sql, @mssql_get_last_message(), -1);
+        }
         
         return $RS;
     }
     
     public function query($sql)
-    {    
+    {
         $RS = $this->sendCommand($sql);
 
-        if($RS===TRUE)
-            throw new GetResultSetException ($sql, 'No ResultSet found', -1);
+        if ($RS===true) {
+            throw new GetResultSetException($sql, 'No ResultSet found', -1);
+        }
 
 
         $RS2 = array();
-        while ($ROW = @mssql_fetch_assoc($RS))
-        {        
+        while ($ROW = @mssql_fetch_assoc($RS)) {
             $ROW2 = array();
 
-            foreach($ROW as $KEY =>$VALUE)
-                $ROW2[strtoupper ($KEY)] = utf8_encode(trim($VALUE));
+            foreach ($ROW as $KEY =>$VALUE) {
+                $ROW2[strtoupper($KEY)] = utf8_encode(trim($VALUE));
+            }
 
             array_push($RS2, $ROW2);
         }
@@ -134,94 +137,102 @@ class MsSQL extends \Kito\DataBase\SQL\Driver
     {
         $RS = $this->sendCommand($sql);
             
-        if($RS!==TRUE)
-            throw new CommandException ($sql, 'ResultSet found', -1);                
+        if ($RS!==true) {
+            throw new CommandException($sql, 'ResultSet found', -1);
+        }
 
-        return true;                           
+        return true;
     }
             
-    private function arrayToEqual($data, $and = "and", $null_case = "is null") 
+    private function arrayToEqual($data, $and = "and", $null_case = "is null")
     {
         $t = "";
         foreach ($data as $key => $value) {
-            if ($t != "")
+            if ($t != "") {
                 $t.=" $and ";
+            }
 
-            if(strpos($key, '!')===0)
-            {
+            if (strpos($key, '!')===0) {
                 $key = substr($key, 1);
                 $t.='not ';
             }
 
-            if ($value === null)
+            if ($value === null) {
                 $t.="".$key . " " . $null_case;
-            else
+            } else {
                 $t.="".$key . "=" . self::mssql_escape($value) . "";
+            }
         }
         return $t;
     }
-    private function arrayToWhere($data) 
+    private function arrayToWhere($data)
     {
         $t = $this->arrayToEqual($data);
-        if ($t != "")
+        if ($t != "") {
             return " where " . $t;
-        else
+        } else {
             return "";
+        }
     }
      
-    private static function mssql_escape($data) 
-    {    
-         
-        if(is_numeric($data))
+    private static function mssql_escape($data)
+    {
+        if (is_numeric($data)) {
             return $data;
-        else
+        } else {
             return "'".$data."'";
+        }
         
         $unpacked = unpack('H*hex', $data);
         return '0x' . $unpacked['hex'];
     }
     
-    private static function arrayToSelect($data) 
+    private static function arrayToSelect($data)
     {
-        
-        if(is_array($data) && count($data)>0)
+        if (is_array($data) && count($data)>0) {
             return '' . implode(',', $data) . '';
-        else
-            return '*';                            
+        } else {
+            return '*';
+        }
     }
 
-    private function arrayToInsert($data) {
+    private function arrayToInsert($data)
+    {
         $t0 = "";
         $t1 = "";
         foreach ($data as $key => $value) {
-            if ($t0 != "")
+            if ($t0 != "") {
                 $t0.=",";
+            }
 
-            if ($t1 != "")
+            if ($t1 != "") {
                 $t1.=",";
+            }
 
             $t0.="".$key."";
 
-            if ($value === null)
+            if ($value === null) {
                 $t1.="null";
-            else
+            } else {
                 $t1.="" . self::mssql_escape($value) . "";
+            }
         }
 
         return "(" . $t0 . ") VALUES (" . $t1 . ")";
     }
 
     
-    public function select($table, $col = array(), $where = array()) 
+    public function select($table, $col = array(), $where = array())
     {
-        try {               
+        try {
             return $this->query("SELECT " . self::arrayToSelect($col) . " FROM " . $table . $this->arrayToWhere($where));
         } catch (Exception $ex) {
             throw new SelectException($ex);
         }
-    }    
+    }
     
-    public function delete($table, $where = array()) {
+    public function delete($table, $where = array())
+    {
         try {
             return $this->command("DELETE FROM " . $table . $this->arrayToWhere($where));
         } catch (Exception $ex) {
@@ -229,7 +240,8 @@ class MsSQL extends \Kito\DataBase\SQL\Driver
         }
     }
 
-    public function insert($table, $data = array()) {
+    public function insert($table, $data = array())
+    {
         try {
             return $this->command("INSERT INTO " . $table . " " . $this->arrayToInsert($data));
         } catch (Exception $ex) {
@@ -237,75 +249,84 @@ class MsSQL extends \Kito\DataBase\SQL\Driver
         }
     }
 
-    public function update($table, $data, $where = array()) {
+    public function update($table, $data, $where = array())
+    {
         try {
             return $this->command("UPDATE " . $table . " SET " . $this->arrayToEqual($data, ",", "= null") . $this->arrayToWhere($where));
         } catch (Exception $ex) {
             throw new UpdateException($ex);
         }
-    }    
-    public function selectRow($table, $col = array(), $where = array()) {
+    }
+    public function selectRow($table, $col = array(), $where = array())
+    {
         $RS = $this->select($table, $col, $where);
 
-        if (count($RS) > 1)
+        if (count($RS) > 1) {
             throw new TooManyRowsException();
+        }
 
-        if (count($RS) == 0)
+        if (count($RS) == 0) {
             return null;
+        }
 
         return $RS[0];
-    }    
+    }
   
     
     public static function dateNormalizer($d)
     {
-        if ($d == null)
+        if ($d == null) {
             return null;
-        elseif ($d instanceof DateTime)
+        } elseif ($d instanceof DateTime) {
             return $d->getTimestamp();
-        else
+        } else {
             return strtotime($d);
+        }
     }
     
     public static function unixTime2SQL($time)
     {
-        if($time===null)
+        if ($time===null) {
             return null;
+        }
         
         $timezone = new \DateTimeZone('America/Montevideo');
-        $date = new \DateTime('now',$timezone);
+        $date = new \DateTime('now', $timezone);
         $date->setTimestamp($time);
         return $date->format("Y-m-d\TH:i:s");
     }
 
-    public function count($table, $where = array()) {
-        
+    public function count($table, $where = array())
+    {
     }
 
-    public function getDatabase() {
+    public function getDatabase()
+    {
         return $this->scheme;
     }
 
-    public function getDatabases() {
-        throw new NotImplementedException();
-    }
-
-    public function getTables() {
-        throw new NotImplementedException();
-    }
-
-    public function max($table, $column, $where = array()) {
-        throw new NotImplementedException();
-    }
-
-    public function min($table, $column, $where = array()) 
+    public function getDatabases()
     {
         throw new NotImplementedException();
     }
 
-    public function copyTable($sourceTable, $destinationTable) 
+    public function getTables()
     {
-        return $this->command('SELECT * INTO '.$destinationTable.' FROM '.$sourceTable.' WHERE 1=0;');    
+        throw new NotImplementedException();
     }
 
+    public function max($table, $column, $where = array())
+    {
+        throw new NotImplementedException();
+    }
+
+    public function min($table, $column, $where = array())
+    {
+        throw new NotImplementedException();
+    }
+
+    public function copyTable($sourceTable, $destinationTable)
+    {
+        return $this->command('SELECT * INTO '.$destinationTable.' FROM '.$sourceTable.' WHERE 1=0;');
+    }
 }

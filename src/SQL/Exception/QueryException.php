@@ -20,6 +20,7 @@ namespace Kito\DataBase\SQL\Exception;
  * @author TheKito < blankitoracing@gmail.com >
  */
 
-class QueryException extends Exception{
+class QueryException extends Exception
+{
     //put your code here
 }

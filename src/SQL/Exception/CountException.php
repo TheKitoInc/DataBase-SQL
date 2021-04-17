@@ -20,6 +20,7 @@ namespace Kito\DataBase\SQL\Exception;
  * @author TheKito < blankitoracing@gmail.com >
  */
 
-class CountException extends Exception{
+class CountException extends Exception
+{
     //put your code here
 }

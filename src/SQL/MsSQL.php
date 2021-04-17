@@ -12,7 +12,6 @@
  * GNU Lesser General Public License for more details.
  *
  */
-
 namespace Kito\DataBase\SQL;
 
 use Kito\DataBase\SQL\Exception\CommandException;
@@ -32,11 +31,11 @@ use Kito\Exception\NotImplementedException;
  */
 class MsSQL extends \Kito\DataBase\SQL\Driver
 {
+
     private $server;
     private $user;
     private $password;
     private $scheme;
-
     private $cnn = null;
 
     public function __construct(string $server, string $user, string $password, string $scheme)
@@ -81,7 +80,7 @@ class MsSQL extends \Kito\DataBase\SQL\Driver
         $this->cnn = null;
     }
 
-    public function isConnected() : bool
+    public function isConnected(): bool
     {
         return $this->cnn !== null;
     }
@@ -93,7 +92,7 @@ class MsSQL extends \Kito\DataBase\SQL\Driver
         }
     }
 
-    private function sendCommand($sql)
+    private function sendCommand(string $sql)
     {
         if (!$this->isConnected()) {
             throw new ConnectionClosedException();
@@ -108,7 +107,7 @@ class MsSQL extends \Kito\DataBase\SQL\Driver
         return $RS;
     }
 
-    public function query($sql) : array
+    public function query(string $sql): array
     {
         $RS = $this->sendCommand($sql);
 
@@ -120,7 +119,7 @@ class MsSQL extends \Kito\DataBase\SQL\Driver
         while ($ROW = @mssql_fetch_assoc($RS)) {
             $ROW2 = [];
 
-            foreach ($ROW as $KEY =>$VALUE) {
+            foreach ($ROW as $KEY => $VALUE) {
                 $ROW2[strtoupper($KEY)] = utf8_encode(trim($VALUE));
             }
 
@@ -131,7 +130,7 @@ class MsSQL extends \Kito\DataBase\SQL\Driver
         return $RS2;
     }
 
-    public function command($sql)
+    public function command(string $sql)
     {
         $RS = $this->sendCommand($sql);
 
@@ -142,7 +141,7 @@ class MsSQL extends \Kito\DataBase\SQL\Driver
         return true;
     }
 
-    private function arrayToEqual(array $data, $and = 'and', $null_case = 'is null')
+    private function arrayToEqual(array $data, string $and = 'and', string $null_case = 'is null')
     {
         $t = '';
         foreach ($data as $key => $value) {
@@ -156,9 +155,9 @@ class MsSQL extends \Kito\DataBase\SQL\Driver
             }
 
             if ($value === null) {
-                $t .= ''.$key.' '.$null_case;
+                $t .= '' . $key . ' ' . $null_case;
             } else {
-                $t .= ''.$key.'='.self::mssql_escape($value).'';
+                $t .= '' . $key . '=' . self::mssql_escape($value) . '';
             }
         }
 
@@ -169,7 +168,7 @@ class MsSQL extends \Kito\DataBase\SQL\Driver
     {
         $t = $this->arrayToEqual($data);
         if ($t != '') {
-            return ' where '.$t;
+            return ' where ' . $t;
         } else {
             return '';
         }
@@ -180,24 +179,24 @@ class MsSQL extends \Kito\DataBase\SQL\Driver
         if (is_numeric($data)) {
             return $data;
         } else {
-            return "'".$data."'";
+            return "'" . $data . "'";
         }
 
         $unpacked = unpack('H*hex', $data);
 
-        return '0x'.$unpacked['hex'];
+        return '0x' . $unpacked['hex'];
     }
 
-    private static function arrayToSelect($data)
+    private static function arrayToSelect(array $data): string
     {
         if (is_array($data) && count($data) > 0) {
-            return ''.implode(',', $data).'';
+            return '' . implode(',', $data) . '';
         } else {
             return '*';
         }
     }
 
-    private function arrayToInsert($data)
+    private function arrayToInsert(array $data): string
     {
         $t0 = '';
         $t1 = '';
@@ -210,55 +209,55 @@ class MsSQL extends \Kito\DataBase\SQL\Driver
                 $t1 .= ',';
             }
 
-            $t0 .= ''.$key.'';
+            $t0 .= '' . $key . '';
 
             if ($value === null) {
                 $t1 .= 'null';
             } else {
-                $t1 .= ''.self::mssql_escape($value).'';
+                $t1 .= '' . self::mssql_escape($value) . '';
             }
         }
 
-        return '('.$t0.') VALUES ('.$t1.')';
+        return '(' . $t0 . ') VALUES (' . $t1 . ')';
     }
 
-    public function select(string $table, $col = [], $where = [])
+    public function select(string $table, array $col = [], array $where = [])
     {
         try {
-            return $this->query('SELECT '.self::arrayToSelect($col).' FROM '.$table.$this->arrayToWhere($where));
+            return $this->query('SELECT ' . self::arrayToSelect($col) . ' FROM ' . $table . $this->arrayToWhere($where));
         } catch (Exception $ex) {
             throw new SelectException($ex);
         }
     }
 
-    public function delete(string $table, $where = [])
+    public function delete(string $table, array $where = [])
     {
         try {
-            return $this->command('DELETE FROM '.$table.$this->arrayToWhere($where));
+            return $this->command('DELETE FROM ' . $table . $this->arrayToWhere($where));
         } catch (Exception $ex) {
             throw new DeleteException($ex);
         }
     }
 
-    public function insert(string $table, $data = [])
+    public function insert(string $table, array $data = [])
     {
         try {
-            return $this->command('INSERT INTO '.$table.' '.$this->arrayToInsert($data));
+            return $this->command('INSERT INTO ' . $table . ' ' . $this->arrayToInsert($data));
         } catch (Exception $ex) {
             throw new InsertException($ex);
         }
     }
 
-    public function update(string $table, $data, $where = [])
+    public function update(string $table, array $data, array $where = [])
     {
         try {
-            return $this->command('UPDATE '.$table.' SET '.$this->arrayToEqual($data, ',', '= null').$this->arrayToWhere($where));
+            return $this->command('UPDATE ' . $table . ' SET ' . $this->arrayToEqual($data, ',', '= null') . $this->arrayToWhere($where));
         } catch (Exception $ex) {
             throw new UpdateException($ex);
         }
     }
 
-    public function selectRow(string $table, $col = [], $where = [])
+    public function selectRow(string $table, array $col = [], array $where = [])
     {
         $RS = $this->select($table, $col, $where);
 
@@ -273,7 +272,7 @@ class MsSQL extends \Kito\DataBase\SQL\Driver
         return $RS[0];
     }
 
-    public static function dateNormalizer($d) : int
+    public static function dateNormalizer($d): int
     {
         if ($d == null) {
             return null;
@@ -284,12 +283,12 @@ class MsSQL extends \Kito\DataBase\SQL\Driver
         }
     }
 
-    public static function unixTime2SQL(int $time) : string
+    public static function unixTime2SQL(int $time): string
     {
         if ($time === null) {
             return null;
         }
-        
+
         $date = new \DateTime('now');
         $date->setTimestamp($time);
 
@@ -301,22 +300,22 @@ class MsSQL extends \Kito\DataBase\SQL\Driver
         throw new NotImplementedException();
     }
 
-    public function getDatabase() : string
+    public function getDatabase(): string
     {
         return $this->scheme;
     }
 
-    public function getDatabases() : array
+    public function getDatabases(): array
     {
         throw new NotImplementedException();
     }
 
-    public function getTables() : array
+    public function getTables(): array
     {
         throw new NotImplementedException();
     }
 
-    public function max(string $table,string  $column,array $where = [])
+    public function max(string $table, string $column, array $where = [])
     {
         throw new NotImplementedException();
     }
@@ -326,8 +325,8 @@ class MsSQL extends \Kito\DataBase\SQL\Driver
         throw new NotImplementedException();
     }
 
-    public function copyTable(string $sourceTable,string  $destinationTable)
+    public function copyTable(string $sourceTable, string $destinationTable)
     {
-        return $this->command('SELECT * INTO '.$destinationTable.' FROM '.$sourceTable.' WHERE 1=0;');
+        return $this->command('SELECT * INTO ' . $destinationTable . ' FROM ' . $sourceTable . ' WHERE 1=0;');
     }
 }

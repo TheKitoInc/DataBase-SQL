@@ -39,7 +39,7 @@ class MsSQL extends \Kito\DataBase\SQL\Driver
 
     private $cnn = null;
 
-    public function __construct($server, $user, $password, $scheme)
+    public function __construct(string $server, string $user, string $password, string $scheme)
     {
         $this->server = $server;
         $this->user = $user;
@@ -81,7 +81,7 @@ class MsSQL extends \Kito\DataBase\SQL\Driver
         $this->cnn = null;
     }
 
-    public function isConnected()
+    public function isConnected() : bool
     {
         return $this->cnn !== null;
     }
@@ -108,7 +108,7 @@ class MsSQL extends \Kito\DataBase\SQL\Driver
         return $RS;
     }
 
-    public function query($sql)
+    public function query($sql) : array
     {
         $RS = $this->sendCommand($sql);
 
@@ -142,7 +142,7 @@ class MsSQL extends \Kito\DataBase\SQL\Driver
         return true;
     }
 
-    private function arrayToEqual($data, $and = 'and', $null_case = 'is null')
+    private function arrayToEqual(array $data, $and = 'and', $null_case = 'is null')
     {
         $t = '';
         foreach ($data as $key => $value) {
@@ -165,7 +165,7 @@ class MsSQL extends \Kito\DataBase\SQL\Driver
         return $t;
     }
 
-    private function arrayToWhere($data)
+    private function arrayToWhere(array $data)
     {
         $t = $this->arrayToEqual($data);
         if ($t != '') {
@@ -222,7 +222,7 @@ class MsSQL extends \Kito\DataBase\SQL\Driver
         return '('.$t0.') VALUES ('.$t1.')';
     }
 
-    public function select($table, $col = [], $where = [])
+    public function select(string $table, $col = [], $where = [])
     {
         try {
             return $this->query('SELECT '.self::arrayToSelect($col).' FROM '.$table.$this->arrayToWhere($where));
@@ -231,7 +231,7 @@ class MsSQL extends \Kito\DataBase\SQL\Driver
         }
     }
 
-    public function delete($table, $where = [])
+    public function delete(string $table, $where = [])
     {
         try {
             return $this->command('DELETE FROM '.$table.$this->arrayToWhere($where));
@@ -240,7 +240,7 @@ class MsSQL extends \Kito\DataBase\SQL\Driver
         }
     }
 
-    public function insert($table, $data = [])
+    public function insert(string $table, $data = [])
     {
         try {
             return $this->command('INSERT INTO '.$table.' '.$this->arrayToInsert($data));
@@ -249,7 +249,7 @@ class MsSQL extends \Kito\DataBase\SQL\Driver
         }
     }
 
-    public function update($table, $data, $where = [])
+    public function update(string $table, $data, $where = [])
     {
         try {
             return $this->command('UPDATE '.$table.' SET '.$this->arrayToEqual($data, ',', '= null').$this->arrayToWhere($where));
@@ -258,7 +258,7 @@ class MsSQL extends \Kito\DataBase\SQL\Driver
         }
     }
 
-    public function selectRow($table, $col = [], $where = [])
+    public function selectRow(string $table, $col = [], $where = [])
     {
         $RS = $this->select($table, $col, $where);
 
@@ -273,7 +273,7 @@ class MsSQL extends \Kito\DataBase\SQL\Driver
         return $RS[0];
     }
 
-    public static function dateNormalizer($d)
+    public static function dateNormalizer($d) : int
     {
         if ($d == null) {
             return null;
@@ -284,7 +284,7 @@ class MsSQL extends \Kito\DataBase\SQL\Driver
         }
     }
 
-    public static function unixTime2SQL($time)
+    public static function unixTime2SQL(int $time) : string
     {
         if ($time === null) {
             return null;
@@ -296,36 +296,37 @@ class MsSQL extends \Kito\DataBase\SQL\Driver
         return $date->format("Y-m-d\TH:i:s");
     }
 
-    public function count($table, $where = [])
+    public function count(string $table, array $where = [])
     {
+        throw new NotImplementedException();
     }
 
-    public function getDatabase()
+    public function getDatabase() : string
     {
         return $this->scheme;
     }
 
-    public function getDatabases()
+    public function getDatabases() : array
     {
         throw new NotImplementedException();
     }
 
-    public function getTables()
+    public function getTables() : array
     {
         throw new NotImplementedException();
     }
 
-    public function max($table, $column, $where = [])
+    public function max(string $table,string  $column,array $where = [])
     {
         throw new NotImplementedException();
     }
 
-    public function min($table, $column, $where = [])
+    public function min(string $table, string $column, array $where = [])
     {
         throw new NotImplementedException();
     }
 
-    public function copyTable($sourceTable, $destinationTable)
+    public function copyTable(string $sourceTable,string  $destinationTable)
     {
         return $this->command('SELECT * INTO '.$destinationTable.' FROM '.$sourceTable.' WHERE 1=0;');
     }

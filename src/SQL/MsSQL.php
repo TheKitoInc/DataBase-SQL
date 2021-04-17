@@ -289,9 +289,8 @@ class MsSQL extends \Kito\DataBase\SQL\Driver
         if ($time === null) {
             return null;
         }
-
-        $timezone = new \DateTimeZone('America/Montevideo');
-        $date = new \DateTime('now', $timezone);
+        
+        $date = new \DateTime('now');
         $date->setTimestamp($time);
 
         return $date->format("Y-m-d\TH:i:s");

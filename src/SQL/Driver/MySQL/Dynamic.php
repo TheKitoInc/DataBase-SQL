@@ -15,46 +15,48 @@
 
 namespace Kito\DataBase\SQL\Driver\MySQL;
 
-use \Kito\DataBase\SQL\Driver\MySQL;
+use Kito\DataBase\SQL\Driver\MySQL;
 use Kito\DataType\Integer;
 
 /**
- *
  * @author TheKito < blankitoracing@gmail.com >
  */
- 
 class Dynamic
 {
     private $driver;
     private $tablePrefix;
+
     public function __construct(MySQL $driver, $tablePrefix)
     {
         $this->driver = $driver;
         $this->tablePrefix = $tablePrefix;
     }
-    
-    
+
     public function delete($id)
     {
         $id_ = Integer::unSignedInt64UnCombineIntoInt32($id);
-        return $this->driver->delete($this->tablePrefix . $id_[0], array('id'=>$id_[1]));
+
+        return $this->driver->delete($this->tablePrefix.$id_[0], ['id'=>$id_[1]]);
     }
-    
+
     public function exists($id)
     {
         $id_ = Integer::unSignedInt64UnCombineIntoInt32($id);
-        return $this->driver->exists($this->tablePrefix . $id_[0], array('id'=>$id_[1]));
+
+        return $this->driver->exists($this->tablePrefix.$id_[0], ['id'=>$id_[1]]);
     }
 
     public function get($id)
     {
         $id_ = Integer::unSignedInt64UnCombineIntoInt32($id);
-        return $this->driver->getRow($this->tablePrefix . $id_[0], array(), array('id'=>$id_[1]));
+
+        return $this->driver->getRow($this->tablePrefix.$id_[0], [], ['id'=>$id_[1]]);
     }
-    
-    public function set($idHigh, $data = array())
+
+    public function set($idHigh, $data = [])
     {
-        $idLow = $this->driver->autoTable($this->tablePrefix . $idHigh, $data, array('id'))['id'];
+        $idLow = $this->driver->autoTable($this->tablePrefix.$idHigh, $data, ['id'])['id'];
+
         return Integer::unSignedInt32CombineIntoInt64(
             $idHigh,
             $idLow

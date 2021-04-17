@@ -16,10 +16,8 @@
 namespace Kito\RDB\SQL\Exception;
 
 /**
- *
  * @author TheKito < blankitoracing@gmail.com >
  */
-
 class TooManyRowsException extends Exception
 {
     //put your code here

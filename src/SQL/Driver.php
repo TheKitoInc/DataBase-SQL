@@ -23,35 +23,36 @@ use Kito\DataBase\SQL\Exception\TooManyRowsException;
  */
 abstract class Driver
 {
-    abstract public function isConnected();
 
-    abstract public function query($query);
+    abstract public function isConnected(): bool;
 
-    abstract public function command($command);
+    abstract public function query(string $query): array;
 
-    abstract public function delete($table, $where = [], $limit = 100);
+    abstract public function command(string $command);
 
-    abstract public function insert($table, $data = []);
+    abstract public function delete(string $table, array $where = [], int $limit = 100);
 
-    abstract public function update($table, $data, $where = [], $limit = 0);
+    abstract public function insert(string $table, array $data = []);
 
-    abstract public function select($table, $column = [], $where = [], $limit = 100, $rand = false);
+    abstract public function update(string $table, array $data, array $where = [], int $limit = 0);
 
-    abstract public function count($table, $where = []);
+    abstract public function select(string $table, array $column = [], array $where = [], int $limit = 100, bool $rand = false);
 
-    abstract public function max($table, $column, $where = []);
+    abstract public function count(string $table, array $where = []);
 
-    abstract public function min($table, $column, $where = []);
+    abstract public function max(string $table, array $column, array $where = []);
 
-    abstract public function getTables();
+    abstract public function min(string $table, array $column, array $where = []);
 
-    abstract public function getDatabases();
+    abstract public function getTables(): array;
 
-    abstract public function getDatabase();
+    abstract public function getDatabases(): array;
 
-    abstract public function copyTable($sourceTable, $destinationTable);
+    abstract public function getDatabase(): string;
 
-    final public function getArray($table, $column, $where = [])
+    abstract public function copyTable(string $sourceTable, string $destinationTable);
+
+    final public function getArray(string $table, string $column, array $where = []): array
     {
         $r = [];
 
@@ -62,7 +63,7 @@ abstract class Driver
         return $r;
     }
 
-    final public function getHashMap($table, $columnKey, $columnValue, $where = [])
+    final public function getHashMap(string $table, string $columnKey, string $columnValue, array $where = []): array
     {
         $r = [];
 
@@ -73,7 +74,7 @@ abstract class Driver
         return $r;
     }
 
-    final public function getRow($table, $column = [], $where = [])
+    final public function getRow(string $table, array $column = [], array $where = []): ?array
     {
         $RS = $this->select($table, $column, $where, 2);
 
@@ -88,7 +89,7 @@ abstract class Driver
         return $RS[0];
     }
 
-    final public function getText($table, $column, $where = [])
+    final public function getText(string $table, string $column, array $where = []): string
     {
         $ROW = $this->getRow($table, [$column], $where);
 
@@ -99,7 +100,7 @@ abstract class Driver
         return $ROW[$column];
     }
 
-    final public function autoTable($table, $data, $column = [], $create = true)
+    final public function autoTable(string $table, array $data, string $column = [], bool $create = true): ?array
     {
         $rs = $this->select($table, $column, $data, 1);
 
@@ -122,7 +123,7 @@ abstract class Driver
         }
     }
 
-    final public function autoUpdate($table, $data, $index)
+    final public function autoUpdate(string $table, array $data, array $index): int
     {
         $UPDATES = 0;
 
@@ -140,7 +141,7 @@ abstract class Driver
 
         foreach ($ROW as $KEY => $VALUE) {
             if (array_key_exists($KEY, $data) && $VALUE != $data[$KEY]) {
-                $this->update($table, [$KEY=>$data[$KEY]], $index, 1);
+                $this->update($table, [$KEY => $data[$KEY]], $index, 1);
                 $UPDATES++;
             }
         }
@@ -148,7 +149,7 @@ abstract class Driver
         return $UPDATES;
     }
 
-    final public function autoInsert($table, $data)
+    final public function autoInsert(string $table, array $data): bool
     {
         $rs = $this->select($table, [], $data, 1);
 
@@ -163,7 +164,7 @@ abstract class Driver
         return false;
     }
 
-    public function getTablesWithPrefix($prefix)
+    public function getTablesWithPrefix(string $prefix): array
     {
         $prefixLen = strlen($prefix);
 

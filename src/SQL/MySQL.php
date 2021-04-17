@@ -15,31 +15,28 @@
 
 namespace Kito\DataBase\SQL;
 
-use \mysqli;
-use Kito\DataBase\SQL\Exception\ConnectException;
 use Kito\DataBase\SQL\Exception\CommandException;
-use Kito\DataBase\SQL\Exception\SelectException;
-use Kito\DataBase\SQL\Exception\InsertException;
-use Kito\DataBase\SQL\Exception\UpdateException;
+use Kito\DataBase\SQL\Exception\ConnectException;
 use Kito\DataBase\SQL\Exception\DeleteException;
+use Kito\DataBase\SQL\Exception\InsertException;
+use Kito\DataBase\SQL\Exception\SelectException;
+use Kito\DataBase\SQL\Exception\UpdateException;
+use mysqli;
 
 /**
- *
  * @author TheKito < blankitoracing@gmail.com >
  */
-
-
 class MySQL extends \Kito\DataBase\SQL\Driver
 {
-    public static function getMySqlConnection($server = "127.0.0.1", $database = "test", $user = "test", $password = null)
+    public static function getMySqlConnection($server = '127.0.0.1', $database = 'test', $user = 'test', $password = null)
     {
         static $CNNs = null;
 
         if ($CNNs === null) {
-            $CNNs = array();
+            $CNNs = [];
         }
 
-        $KEY = implode(',', array($server,$database,$user,$password));
+        $KEY = implode(',', [$server, $database, $user, $password]);
 
         if (!isset($CNNs[$KEY])) {
             $CNNs[$KEY] = new self($server, $database, $user, $password);
@@ -58,19 +55,19 @@ class MySQL extends \Kito\DataBase\SQL\Driver
         return self::getMySqlConnection('127.0.0.1', $database, $user, $password);
     }
 
-    private $server = "127.0.0.1";
-    private $database = "test";
-    private $user = "test";
+    private $server = '127.0.0.1';
+    private $database = 'test';
+    private $user = 'test';
     private $password = null;
     private $cnn = null;
     public $__DEBUG = false;
 
     public function getId()
     {
-        return md5($this->server . $this->user . $this->password . $this->database);
+        return md5($this->server.$this->user.$this->password.$this->database);
     }
 
-    private function __construct($server = "127.0.0.1", $database = "test", $user = "test", $password = null)
+    private function __construct($server = '127.0.0.1', $database = 'test', $user = 'test', $password = null)
     {
         $this->server = $server;
         $this->database = $database;
@@ -103,7 +100,7 @@ class MySQL extends \Kito\DataBase\SQL\Driver
                 throw new ConnectException($this->cnn->connect_error.':'.$this->cnn->connect_errno);
             }
 
-            $this->cnn->set_charset("utf8");
+            $this->cnn->set_charset('utf8');
         }
 
         return true;
@@ -123,10 +120,9 @@ class MySQL extends \Kito\DataBase\SQL\Driver
         $this->connect();
 
         if ($this->__DEBUG) {
-            echo "CALL: " . $sql . PHP_EOL;
+            echo 'CALL: '.$sql.PHP_EOL;
         }
-            
-        
+
         //echo "$sql\n";
 
         $rs = $this->cnn->query($sql);
@@ -138,7 +134,7 @@ class MySQL extends \Kito\DataBase\SQL\Driver
         if ($rs === true) {
             return true;
         } else {
-            $data = array();
+            $data = [];
 
             while ($row = $rs->fetch_assoc()) {
                 array_push($data, $row);
@@ -154,12 +150,12 @@ class MySQL extends \Kito\DataBase\SQL\Driver
     {
         try {
             $t = microtime(true);
-            
+
             $rs = $this->doCall($query);
 
             $t = round(microtime(true) - $t, 3);
-            
-            \Kito\Logger::getInstance()->debug("QUERY ($t): " . $query);
+
+            \Kito\Logger::getInstance()->debug("QUERY ($t): ".$query);
 
             return $rs;
         } catch (Exception $e) {
@@ -171,12 +167,12 @@ class MySQL extends \Kito\DataBase\SQL\Driver
     {
         try {
             $t = microtime(true);
-            
+
             $this->doCall($command);
 
             $t = round(microtime(true) - $t, 3);
 
-            \Kito\Logger::getInstance()->debug("COMMAND ($t): " . $command);
+            \Kito\Logger::getInstance()->debug("COMMAND ($t): ".$command);
 
             return true;
         } catch (Exception $e) {
@@ -184,92 +180,96 @@ class MySQL extends \Kito\DataBase\SQL\Driver
         }
     }
 
-    public function delete($table, $where = array(), $limit = 100)
+    public function delete($table, $where = [], $limit = 100)
     {
         try {
-            return $this->command("DELETE FROM " . $table . $this->arrayToWhere($where) . self::getLimit($limit));
+            return $this->command('DELETE FROM '.$table.$this->arrayToWhere($where).self::getLimit($limit));
         } catch (Exception $ex) {
             throw new DeleteException($ex);
         }
     }
 
-    public function insert($table, $data = array())
+    public function insert($table, $data = [])
     {
         try {
-            return $this->command("INSERT INTO " . $table . " " . $this->arrayToInsert($data));
+            return $this->command('INSERT INTO '.$table.' '.$this->arrayToInsert($data));
         } catch (Exception $ex) {
             throw new InsertException($ex);
         }
     }
 
-    public function update($table, $data, $where = array(), $limit = 0)
+    public function update($table, $data, $where = [], $limit = 0)
     {
         try {
-            return $this->command("UPDATE " . $table . " SET " . $this->arrayToEqual($data, ",", "= null") . $this->arrayToWhere($where) . self::getLimit($limit));
+            return $this->command('UPDATE '.$table.' SET '.$this->arrayToEqual($data, ',', '= null').$this->arrayToWhere($where).self::getLimit($limit));
         } catch (Exception $ex) {
             throw new UpdateException($ex);
         }
     }
 
-    public function select($table, $column = array(), $where = array(), $limit = 100, $rand = false)
+    public function select($table, $column = [], $where = [], $limit = 100, $rand = false)
     {
         try {
             if ($rand) {
-                return $this->query("SELECT " . self::arrayToSelect($column) . " FROM " . $table . $this->arrayToWhere($where) . ' ORDER BY RAND() ' . self::getLimit($limit));
+                return $this->query('SELECT '.self::arrayToSelect($column).' FROM '.$table.$this->arrayToWhere($where).' ORDER BY RAND() '.self::getLimit($limit));
             } else {
-                return $this->query("SELECT " . self::arrayToSelect($column) . " FROM " . $table . $this->arrayToWhere($where) . self::getLimit($limit));
+                return $this->query('SELECT '.self::arrayToSelect($column).' FROM '.$table.$this->arrayToWhere($where).self::getLimit($limit));
             }
         } catch (Exception $ex) {
             throw new SelectException($ex);
         }
     }
 
-    public function count($table, $where = array())
+    public function count($table, $where = [])
     {
         try {
-            $rs = $this->query("SELECT COUNT(*) as TOTAL FROM " . $table . $this->arrayToWhere($where));
+            $rs = $this->query('SELECT COUNT(*) as TOTAL FROM '.$table.$this->arrayToWhere($where));
             $rs = $rs[0];
-            return $rs["TOTAL"];
+
+            return $rs['TOTAL'];
         } catch (Exception $ex) {
             throw new CountException($ex);
         }
     }
 
-    public function max($table, $column, $where = array())
+    public function max($table, $column, $where = [])
     {
         try {
-            $rs = $this->query("SELECT MAX(".$column.") as TOTAL FROM " . $table . $this->arrayToWhere($where));
+            $rs = $this->query('SELECT MAX('.$column.') as TOTAL FROM '.$table.$this->arrayToWhere($where));
             $rs = $rs[0];
-            return $rs["TOTAL"];
+
+            return $rs['TOTAL'];
         } catch (Exception $ex) {
             throw new MaxException($ex);
         }
     }
 
-    public function min($table, $column, $where = array())
+    public function min($table, $column, $where = [])
     {
         try {
-            $rs = $this->query("SELECT MIN(".$column.") as TOTAL FROM " . $table . $this->arrayToWhere($where));
+            $rs = $this->query('SELECT MIN('.$column.') as TOTAL FROM '.$table.$this->arrayToWhere($where));
             $rs = $rs[0];
-            return $rs["TOTAL"];
+
+            return $rs['TOTAL'];
         } catch (Exception $ex) {
             throw new MinException($ex);
         }
     }
+
     protected static function getLimit($limit)
     {
         if (is_numeric($limit) && $limit > 0) {
-            return " LIMIT " . $limit . ";";
+            return ' LIMIT '.$limit.';';
         } else {
-            return ";";
+            return ';';
         }
     }
 
     public function getTables()
     {
-        $tables = array();
+        $tables = [];
 
-        foreach ($this->query("SHOW TABLES;") as $ROW) {
+        foreach ($this->query('SHOW TABLES;') as $ROW) {
             foreach ($ROW as $COL) {
                 array_push($tables, $COL);
                 break;
@@ -289,7 +289,7 @@ class MySQL extends \Kito\DataBase\SQL\Driver
         static $pos = null;
 
         if ($pos === null) {
-            $pos = array();
+            $pos = [];
         }
 
         $hash = $table;
@@ -301,7 +301,6 @@ class MySQL extends \Kito\DataBase\SQL\Driver
         }
 
         $pos[$hash] = $start + $count;
-
 
         $rs = $this->query("SELECT * FROM $table LIMIT $start,$count");
 
@@ -319,107 +318,96 @@ class MySQL extends \Kito\DataBase\SQL\Driver
     protected function arrayToWhere($data)
     {
         $t = $this->arrayToEqual($data);
-        if ($t != "") {
-            return " where " . $t;
+        if ($t != '') {
+            return ' where '.$t;
         } else {
-            return "";
+            return '';
         }
     }
 
-    protected function arrayToEqual($data, $and = "and", $null_case = "is null")
+    protected function arrayToEqual($data, $and = 'and', $null_case = 'is null')
     {
-        $t = "";
+        $t = '';
         foreach ($data as $key => $value) {
-            if ($t != "") {
-                $t.=" $and ";
+            if ($t != '') {
+                $t .= " $and ";
             }
 
-            if (strpos($key, '!')===0) {
+            if (strpos($key, '!') === 0) {
                 $key = substr($key, 1);
-                $t.='not ';
+                $t .= 'not ';
             }
 
             if ($value === null) {
-                $t.="`".$key . "` " . $null_case;
+                $t .= '`'.$key.'` '.$null_case;
             } else {
-                $t.="`".$key . "`='" . mysqli_real_escape_string($this->cnn, $value) . "'";
+                $t .= '`'.$key."`='".mysqli_real_escape_string($this->cnn, $value)."'";
             }
         }
+
         return $t;
     }
 
     protected static function arrayToSelect($data)
     {
-        $t = "";
+        $t = '';
         foreach ($data as $value) {
-            if ($t != "") {
-                $t.=",";
+            if ($t != '') {
+                $t .= ',';
             }
 
-            $t.="`".$value."`";
+            $t .= '`'.$value.'`';
         }
-        if ($t != "") {
+        if ($t != '') {
             return $t;
         } else {
-            return "*";
+            return '*';
         }
     }
 
     protected function arrayToInsert($data)
     {
-        $t0 = "";
-        $t1 = "";
+        $t0 = '';
+        $t1 = '';
         foreach ($data as $key => $value) {
-            if ($t0 != "") {
-                $t0.=",";
+            if ($t0 != '') {
+                $t0 .= ',';
             }
 
-            if ($t1 != "") {
-                $t1.=",";
+            if ($t1 != '') {
+                $t1 .= ',';
             }
 
-            $t0.="`".$key."`";
+            $t0 .= '`'.$key.'`';
 
             if ($value === null) {
-                $t1.="null";
+                $t1 .= 'null';
             } else {
-                $t1.="'" . mysqli_real_escape_string($this->cnn, $value) . "'";
+                $t1 .= "'".mysqli_real_escape_string($this->cnn, $value)."'";
             }
         }
 
-        return "(" . $t0 . ") VALUES (" . $t1 . ")";
+        return '('.$t0.') VALUES ('.$t1.')';
     }
-
-
-
-
-
-
-
-
 
     public function insertUnique($table, $data)
     {
         return $this->autoInsert($table, $data);
     }
 
-
-
     public function upgradeTable($table, $data, $index)
     {
         return $this->autoUpdate($table, $data, $index);
     }
 
-   
-
-    public function existsRow($table, $where = array())
+    public function existsRow($table, $where = [])
     {
         return $this->exists($table, $where);
     }
 
-    public function exists($table, $where = array())
+    public function exists($table, $where = [])
     {
-        return $this->count($table, $where)>0;
+        return $this->count($table, $where) > 0;
     }
 
     public function copyTable($sourceTable, $destinationTable)
@@ -430,11 +418,11 @@ class MySQL extends \Kito\DataBase\SQL\Driver
     public function getDatabases()
     {
         $rs = $this->query('show databases;');
-        
+
         foreach ($rs as $index => $row) {
             $rs[$index] = array_pop($row);
         }
-        
+
         return $rs;
     }
 }

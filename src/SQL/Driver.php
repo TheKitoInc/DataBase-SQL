@@ -19,52 +19,61 @@ use Kito\DataBase\SQL\Exception\InsertException;
 use Kito\DataBase\SQL\Exception\TooManyRowsException;
 
 /**
- *
  * @author TheKito < blankitoracing@gmail.com >
  */
-
 abstract class Driver
 {
     abstract public function isConnected();
+
     abstract public function query($query);
+
     abstract public function command($command);
 
-    abstract public function delete($table, $where = array(), $limit = 100);
-    abstract public function insert($table, $data = array());
-    abstract public function update($table, $data, $where = array(), $limit = 0);
-    abstract public function select($table, $column = array(), $where = array(), $limit = 100, $rand = false);
+    abstract public function delete($table, $where = [], $limit = 100);
 
-    abstract public function count($table, $where = array());
-    abstract public function max($table, $column, $where = array());
-    abstract public function min($table, $column, $where = array());
+    abstract public function insert($table, $data = []);
+
+    abstract public function update($table, $data, $where = [], $limit = 0);
+
+    abstract public function select($table, $column = [], $where = [], $limit = 100, $rand = false);
+
+    abstract public function count($table, $where = []);
+
+    abstract public function max($table, $column, $where = []);
+
+    abstract public function min($table, $column, $where = []);
 
     abstract public function getTables();
+
     abstract public function getDatabases();
+
     abstract public function getDatabase();
 
     abstract public function copyTable($sourceTable, $destinationTable);
 
-    final public function getArray($table, $column, $where = array())
+    final public function getArray($table, $column, $where = [])
     {
-        $r = array();
+        $r = [];
 
-        foreach ($this->select($table, array($column), $where) as $ROW) {
+        foreach ($this->select($table, [$column], $where) as $ROW) {
             array_push($r, $ROW[$column]);
         }
 
         return $r;
     }
-    final public function getHashMap($table, $columnKey, $columnValue, $where = array())
-    {
-        $r = array();
 
-        foreach ($this->select($table, array($columnKey, $columnValue), $where) as $ROW) {
+    final public function getHashMap($table, $columnKey, $columnValue, $where = [])
+    {
+        $r = [];
+
+        foreach ($this->select($table, [$columnKey, $columnValue], $where) as $ROW) {
             $r[$ROW[$columnKey]] = $ROW[$columnValue];
         }
 
         return $r;
     }
-    final public function getRow($table, $column = array(), $where = array())
+
+    final public function getRow($table, $column = [], $where = [])
     {
         $RS = $this->select($table, $column, $where, 2);
 
@@ -78,9 +87,10 @@ abstract class Driver
 
         return $RS[0];
     }
-    final public function getText($table, $column, $where = array())
+
+    final public function getText($table, $column, $where = [])
     {
-        $ROW = $this->getRow($table, array($column), $where);
+        $ROW = $this->getRow($table, [$column], $where);
 
         if ($ROW == null) {
             return null;
@@ -88,8 +98,8 @@ abstract class Driver
 
         return $ROW[$column];
     }
-    
-    final public function autoTable($table, $data, $column = array(), $create = true)
+
+    final public function autoTable($table, $data, $column = [], $create = true)
     {
         $rs = $this->select($table, $column, $data, 1);
 
@@ -102,15 +112,16 @@ abstract class Driver
                 if (count($rs) > 0) {
                     return $rs[0];
                 } else {
-                    throw new InsertException(print_r(array($table,$data), true));
+                    throw new InsertException(print_r([$table, $data], true));
                 }
             } else {
-                throw new InsertException(print_r(array($table,$data), true));
+                throw new InsertException(print_r([$table, $data], true));
             }
         } else {
             return null;
         }
     }
+
     final public function autoUpdate($table, $data, $index)
     {
         $UPDATES = 0;
@@ -128,17 +139,18 @@ abstract class Driver
         }
 
         foreach ($ROW as $KEY => $VALUE) {
-            if (array_key_exists($KEY, $data) && $VALUE!=$data[$KEY]) {
-                $this->update($table, array($KEY=>$data[$KEY]), $index, 1);
+            if (array_key_exists($KEY, $data) && $VALUE != $data[$KEY]) {
+                $this->update($table, [$KEY=>$data[$KEY]], $index, 1);
                 $UPDATES++;
             }
         }
 
         return $UPDATES;
     }
+
     final public function autoInsert($table, $data)
     {
-        $rs = $this->select($table, array(), $data, 1);
+        $rs = $this->select($table, [], $data, 1);
 
         if (count($rs) > 0) {
             return true;
@@ -150,19 +162,19 @@ abstract class Driver
 
         return false;
     }
-    
+
     public function getTablesWithPrefix($prefix)
     {
         $prefixLen = strlen($prefix);
-        
-        $_ =array();
-        
+
+        $_ = [];
+
         foreach ($this->getTables() as $table) {
             if (substr($table, 0, $prefixLen) == $prefix) {
                 $_[] = $table;
             }
         }
-            
+
         return $_;
     }
 }

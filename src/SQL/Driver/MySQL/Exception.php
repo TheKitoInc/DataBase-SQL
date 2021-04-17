@@ -16,10 +16,8 @@
 namespace Kito\DataBase\SQL\Driver\MySQL;
 
 /**
- *
  * @author TheKito < blankitoracing@gmail.com >
  */
- 
 class Exception extends \Kito\DataBase\SQL\Driver\Exception
 {
 }

@@ -100,7 +100,7 @@ abstract class Driver
         return $ROW[$column];
     }
 
-    final public function autoTable(string $table, array $data, string $column = [], bool $create = true): ?array
+    final public function autoTable(string $table, array $data, array $column = [], bool $create = true): ?array
     {
         $rs = $this->select($table, $column, $data, 1);
 

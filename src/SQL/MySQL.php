@@ -78,7 +78,7 @@ class MySQL extends Driver
         $this->connect();
     }
 
-    public function isConnected()
+    public function isConnected(): bool
     {
         if ($this->cnn === null) {
             return false;
@@ -147,7 +147,7 @@ class MySQL extends Driver
         }
     }
 
-    public function query(string $query)
+    public function query(string $query) : array
     {
         try {
             $t = microtime(true);
@@ -266,7 +266,7 @@ class MySQL extends Driver
         }
     }
 
-    public function getTables()
+    public function getTables() : array
     {
         $tables = [];
 
@@ -280,7 +280,7 @@ class MySQL extends Driver
         return $tables;
     }
 
-    public function getDatabase()
+    public function getDatabase():string
     {
         return $this->database;
     }
@@ -416,7 +416,7 @@ class MySQL extends Driver
         return $this->command('CREATE TABLE IF NOT EXISTS ' . $destinationTable . ' LIKE ' . $sourceTable . ';');
     }
 
-    public function getDatabases()
+    public function getDatabases() : array
     {
         $rs = $this->query('show databases;');
 

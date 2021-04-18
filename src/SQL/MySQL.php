@@ -28,7 +28,6 @@ use mysqli;
  */
 class MySQL extends Driver
 {
-
     public static function getMySqlConnection(string $server = '127.0.0.1', string $database = 'test', string $user = 'test', string $password = null)
     {
         static $CNNs = null;
@@ -65,7 +64,7 @@ class MySQL extends Driver
 
     public function getId()
     {
-        return md5($this->server . $this->user . $this->password . $this->database);
+        return md5($this->server.$this->user.$this->password.$this->database);
     }
 
     private function __construct(string $server = '127.0.0.1', string $database = 'test', string $user = 'test', string $password = null)
@@ -98,7 +97,7 @@ class MySQL extends Driver
             @$this->cnn = new mysqli($this->server, $this->user, $this->password, $this->database);
 
             if ($this->cnn->connect_errno > 0) {
-                throw new ConnectException($this->cnn->connect_error . ':' . $this->cnn->connect_errno);
+                throw new ConnectException($this->cnn->connect_error.':'.$this->cnn->connect_errno);
             }
 
             $this->cnn->set_charset('utf8');
@@ -121,7 +120,7 @@ class MySQL extends Driver
         $this->connect();
 
         if ($this->__DEBUG) {
-            error_log('CALL: ' . $sql);
+            error_log('CALL: '.$sql);
         }
 
         //echo "$sql\n";
@@ -147,7 +146,7 @@ class MySQL extends Driver
         }
     }
 
-    public function query(string $query) : array
+    public function query(string $query): array
     {
         try {
             $t = microtime(true);
@@ -156,7 +155,7 @@ class MySQL extends Driver
 
             $t = round(microtime(true) - $t, 3);
 
-            \Kito\Logger::getInstance()->debug("QUERY ($t): " . $query);
+            \Kito\Logger::getInstance()->debug("QUERY ($t): ".$query);
 
             return $rs;
         } catch (Exception $e) {
@@ -173,7 +172,7 @@ class MySQL extends Driver
 
             $t = round(microtime(true) - $t, 3);
 
-            \Kito\Logger::getInstance()->debug("COMMAND ($t): " . $command);
+            \Kito\Logger::getInstance()->debug("COMMAND ($t): ".$command);
 
             return true;
         } catch (Exception $e) {
@@ -184,7 +183,7 @@ class MySQL extends Driver
     public function delete(string $table, $where = [], $limit = 100)
     {
         try {
-            return $this->command('DELETE FROM ' . $table . $this->arrayToWhere($where) . self::getLimit($limit));
+            return $this->command('DELETE FROM '.$table.$this->arrayToWhere($where).self::getLimit($limit));
         } catch (Exception $ex) {
             throw new DeleteException($ex);
         }
@@ -193,7 +192,7 @@ class MySQL extends Driver
     public function insert(string $table, $data = [])
     {
         try {
-            return $this->command('INSERT INTO ' . $table . ' ' . $this->arrayToInsert($data));
+            return $this->command('INSERT INTO '.$table.' '.$this->arrayToInsert($data));
         } catch (Exception $ex) {
             throw new InsertException($ex);
         }
@@ -202,7 +201,7 @@ class MySQL extends Driver
     public function update(string $table, $data, $where = [], $limit = 0)
     {
         try {
-            return $this->command('UPDATE ' . $table . ' SET ' . $this->arrayToEqual($data, ',', '= null') . $this->arrayToWhere($where) . self::getLimit($limit));
+            return $this->command('UPDATE '.$table.' SET '.$this->arrayToEqual($data, ',', '= null').$this->arrayToWhere($where).self::getLimit($limit));
         } catch (Exception $ex) {
             throw new UpdateException($ex);
         }
@@ -212,9 +211,9 @@ class MySQL extends Driver
     {
         try {
             if ($rand) {
-                return $this->query('SELECT ' . self::arrayToSelect($column) . ' FROM ' . $table . $this->arrayToWhere($where) . ' ORDER BY RAND() ' . self::getLimit($limit));
+                return $this->query('SELECT '.self::arrayToSelect($column).' FROM '.$table.$this->arrayToWhere($where).' ORDER BY RAND() '.self::getLimit($limit));
             } else {
-                return $this->query('SELECT ' . self::arrayToSelect($column) . ' FROM ' . $table . $this->arrayToWhere($where) . self::getLimit($limit));
+                return $this->query('SELECT '.self::arrayToSelect($column).' FROM '.$table.$this->arrayToWhere($where).self::getLimit($limit));
             }
         } catch (Exception $ex) {
             throw new SelectException($ex);
@@ -224,7 +223,7 @@ class MySQL extends Driver
     public function count(string $table, $where = [])
     {
         try {
-            $rs = $this->query('SELECT COUNT(*) as TOTAL FROM ' . $table . $this->arrayToWhere($where));
+            $rs = $this->query('SELECT COUNT(*) as TOTAL FROM '.$table.$this->arrayToWhere($where));
             $rs = $rs[0];
 
             return $rs['TOTAL'];
@@ -236,7 +235,7 @@ class MySQL extends Driver
     public function max(string $table, $column, $where = [])
     {
         try {
-            $rs = $this->query('SELECT MAX(' . $column . ') as TOTAL FROM ' . $table . $this->arrayToWhere($where));
+            $rs = $this->query('SELECT MAX('.$column.') as TOTAL FROM '.$table.$this->arrayToWhere($where));
             $rs = $rs[0];
 
             return $rs['TOTAL'];
@@ -248,7 +247,7 @@ class MySQL extends Driver
     public function min(string $table, $column, $where = [])
     {
         try {
-            $rs = $this->query('SELECT MIN(' . $column . ') as TOTAL FROM ' . $table . $this->arrayToWhere($where));
+            $rs = $this->query('SELECT MIN('.$column.') as TOTAL FROM '.$table.$this->arrayToWhere($where));
             $rs = $rs[0];
 
             return $rs['TOTAL'];
@@ -260,13 +259,13 @@ class MySQL extends Driver
     protected static function getLimit($limit)
     {
         if (is_numeric($limit) && $limit > 0) {
-            return ' LIMIT ' . $limit . ';';
+            return ' LIMIT '.$limit.';';
         } else {
             return ';';
         }
     }
 
-    public function getTables() : array
+    public function getTables(): array
     {
         $tables = [];
 
@@ -280,7 +279,7 @@ class MySQL extends Driver
         return $tables;
     }
 
-    public function getDatabase():string
+    public function getDatabase(): string
     {
         return $this->database;
     }
@@ -320,7 +319,7 @@ class MySQL extends Driver
     {
         $t = $this->arrayToEqual($data);
         if ($t != '') {
-            return ' where ' . $t;
+            return ' where '.$t;
         } else {
             return '';
         }
@@ -340,9 +339,9 @@ class MySQL extends Driver
             }
 
             if ($value === null) {
-                $t .= '`' . $key . '` ' . $null_case;
+                $t .= '`'.$key.'` '.$null_case;
             } else {
-                $t .= '`' . $key . "`='" . mysqli_real_escape_string($this->cnn, $value) . "'";
+                $t .= '`'.$key."`='".mysqli_real_escape_string($this->cnn, $value)."'";
             }
         }
 
@@ -357,7 +356,7 @@ class MySQL extends Driver
                 $t .= ',';
             }
 
-            $t .= '`' . $value . '`';
+            $t .= '`'.$value.'`';
         }
         if ($t != '') {
             return $t;
@@ -379,16 +378,16 @@ class MySQL extends Driver
                 $t1 .= ',';
             }
 
-            $t0 .= '`' . $key . '`';
+            $t0 .= '`'.$key.'`';
 
             if ($value === null) {
                 $t1 .= 'null';
             } else {
-                $t1 .= "'" . mysqli_real_escape_string($this->cnn, $value) . "'";
+                $t1 .= "'".mysqli_real_escape_string($this->cnn, $value)."'";
             }
         }
 
-        return '(' . $t0 . ') VALUES (' . $t1 . ')';
+        return '('.$t0.') VALUES ('.$t1.')';
     }
 
     public function insertUnique(string $table, $data)
@@ -413,10 +412,10 @@ class MySQL extends Driver
 
     public function copyTable(string $sourceTable, string $destinationTable)
     {
-        return $this->command('CREATE TABLE IF NOT EXISTS ' . $destinationTable . ' LIKE ' . $sourceTable . ';');
+        return $this->command('CREATE TABLE IF NOT EXISTS '.$destinationTable.' LIKE '.$sourceTable.';');
     }
 
-    public function getDatabases() : array
+    public function getDatabases(): array
     {
         $rs = $this->query('show databases;');
 
@@ -426,5 +425,4 @@ class MySQL extends Driver
 
         return $rs;
     }
-
 }

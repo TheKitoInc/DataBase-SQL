@@ -23,7 +23,6 @@ use Kito\DataBase\SQL\Exception\TooManyRowsException;
  */
 abstract class Driver
 {
-
     abstract public function isConnected(): bool;
 
     abstract public function query(string $query): array;

@@ -32,7 +32,6 @@ use Kito\Exception\NotImplementedException;
  */
 class MsSQL extends Driver
 {
-
     private $server;
     private $user;
     private $password;
@@ -156,9 +155,9 @@ class MsSQL extends Driver
             }
 
             if ($value === null) {
-                $t .= '' . $key . ' ' . $null_case;
+                $t .= ''.$key.' '.$null_case;
             } else {
-                $t .= '' . $key . '=' . self::mssql_escape($value) . '';
+                $t .= ''.$key.'='.self::mssql_escape($value).'';
             }
         }
 
@@ -169,7 +168,7 @@ class MsSQL extends Driver
     {
         $t = $this->arrayToEqual($data);
         if ($t != '') {
-            return ' where ' . $t;
+            return ' where '.$t;
         } else {
             return '';
         }
@@ -180,18 +179,18 @@ class MsSQL extends Driver
         if (is_numeric($data)) {
             return $data;
         } else {
-            return "'" . $data . "'";
+            return "'".$data."'";
         }
 
         $unpacked = unpack('H*hex', $data);
 
-        return '0x' . $unpacked['hex'];
+        return '0x'.$unpacked['hex'];
     }
 
     private static function arrayToSelect(array $data): string
     {
         if (is_array($data) && count($data) > 0) {
-            return '' . implode(',', $data) . '';
+            return ''.implode(',', $data).'';
         } else {
             return '*';
         }
@@ -210,22 +209,22 @@ class MsSQL extends Driver
                 $t1 .= ',';
             }
 
-            $t0 .= '' . $key . '';
+            $t0 .= ''.$key.'';
 
             if ($value === null) {
                 $t1 .= 'null';
             } else {
-                $t1 .= '' . self::mssql_escape($value) . '';
+                $t1 .= ''.self::mssql_escape($value).'';
             }
         }
 
-        return '(' . $t0 . ') VALUES (' . $t1 . ')';
+        return '('.$t0.') VALUES ('.$t1.')';
     }
 
     public function select(string $table, array $col = [], array $where = [])
     {
         try {
-            return $this->query('SELECT ' . self::arrayToSelect($col) . ' FROM ' . $table . $this->arrayToWhere($where));
+            return $this->query('SELECT '.self::arrayToSelect($col).' FROM '.$table.$this->arrayToWhere($where));
         } catch (Exception $ex) {
             throw new SelectException($ex);
         }
@@ -234,7 +233,7 @@ class MsSQL extends Driver
     public function delete(string $table, array $where = [])
     {
         try {
-            return $this->command('DELETE FROM ' . $table . $this->arrayToWhere($where));
+            return $this->command('DELETE FROM '.$table.$this->arrayToWhere($where));
         } catch (Exception $ex) {
             throw new DeleteException($ex);
         }
@@ -243,7 +242,7 @@ class MsSQL extends Driver
     public function insert(string $table, array $data = [])
     {
         try {
-            return $this->command('INSERT INTO ' . $table . ' ' . $this->arrayToInsert($data));
+            return $this->command('INSERT INTO '.$table.' '.$this->arrayToInsert($data));
         } catch (Exception $ex) {
             throw new InsertException($ex);
         }
@@ -252,7 +251,7 @@ class MsSQL extends Driver
     public function update(string $table, array $data, array $where = [])
     {
         try {
-            return $this->command('UPDATE ' . $table . ' SET ' . $this->arrayToEqual($data, ',', '= null') . $this->arrayToWhere($where));
+            return $this->command('UPDATE '.$table.' SET '.$this->arrayToEqual($data, ',', '= null').$this->arrayToWhere($where));
         } catch (Exception $ex) {
             throw new UpdateException($ex);
         }
@@ -328,6 +327,6 @@ class MsSQL extends Driver
 
     public function copyTable(string $sourceTable, string $destinationTable)
     {
-        return $this->command('SELECT * INTO ' . $destinationTable . ' FROM ' . $sourceTable . ' WHERE 1=0;');
+        return $this->command('SELECT * INTO '.$destinationTable.' FROM '.$sourceTable.' WHERE 1=0;');
     }
 }

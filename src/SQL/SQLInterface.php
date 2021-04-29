@@ -11,25 +11,23 @@ declare(strict_types=1);
  *
  * @author   TheKito <TheKito@blktech.com>
  * @license  http://opensource.org/licenses/gpl-license.php GNU GPL
- *
  */
 
 namespace Kito\DataBase\SQL;
 
 interface SQLInterface
 {
-    
     /**
-     * Execute query with resultset in array
+     * Execute query with resultset in array.
      *
      * @param string $sql
      *
      * @return array
      */
     public function query(string $sql): array;
-    
+
     /**
-     * Execute command without any resultset
+     * Execute command without any resultset.
      *
      * @param string $sql
      *

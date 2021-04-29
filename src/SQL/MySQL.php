@@ -315,7 +315,7 @@ class MySQL extends Driver implements SQLInterface
         return $rs;
     }
 
-    protected function arrayToWhere(array $data) : string
+    protected function arrayToWhere(array $data): string
     {
         $t = $this->arrayToEqual($data);
         if ($t != '') {
@@ -348,7 +348,7 @@ class MySQL extends Driver implements SQLInterface
         return $t;
     }
 
-    protected static function arrayToSelect(array $data):string
+    protected static function arrayToSelect(array $data): string
     {
         $t = '';
         foreach ($data as $value) {

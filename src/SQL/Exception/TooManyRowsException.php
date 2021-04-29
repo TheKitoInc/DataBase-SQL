@@ -13,7 +13,7 @@
  *
  */
 
-namespace Kito\RDB\SQL\Exception;
+namespace Kito\DataBase\SQL\Exception;
 
 /**
  * @author TheKito < blankitoracing@gmail.com >

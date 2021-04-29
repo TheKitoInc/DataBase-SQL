@@ -23,37 +23,37 @@ use Kito\DataType\Integer;
  */
 class Dynamic
 {
-    private $driver;
-    private $tablePrefix;
+    private MySQL $driver;
+    private string $tablePrefix;
 
-    public function __construct(MySQL $driver, $tablePrefix)
+    public function __construct(MySQL $driver, string $tablePrefix)
     {
         $this->driver = $driver;
         $this->tablePrefix = $tablePrefix;
     }
 
-    public function delete($id)
+    public function delete(int $id) :void
     {
         $id_ = Integer::unSignedInt64UnCombineIntoInt32($id);
 
-        return $this->driver->delete($this->tablePrefix.$id_[0], ['id'=>$id_[1]]);
+        $this->driver->delete($this->tablePrefix.$id_[0], ['id'=>$id_[1]]);
     }
 
-    public function exists($id)
+    public function exists(int $id) : bool
     {
         $id_ = Integer::unSignedInt64UnCombineIntoInt32($id);
 
         return $this->driver->exists($this->tablePrefix.$id_[0], ['id'=>$id_[1]]);
     }
 
-    public function get($id)
+    public function get(int $id):array
     {
         $id_ = Integer::unSignedInt64UnCombineIntoInt32($id);
 
         return $this->driver->getRow($this->tablePrefix.$id_[0], [], ['id'=>$id_[1]]);
     }
 
-    public function set($idHigh, $data = [])
+    public function set(string $idHigh, array $data = []) :int
     {
         $idLow = $this->driver->autoTable($this->tablePrefix.$idHigh, $data, ['id'])['id'];
 

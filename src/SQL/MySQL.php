@@ -26,7 +26,7 @@ use mysqli;
 /**
  * @author TheKito < blankitoracing@gmail.com >
  */
-class MySQL extends Driver
+class MySQL extends Driver implements SQLInterface
 {
     public static function getMySqlConnection(string $server = '127.0.0.1', string $database = 'test', string $user = 'test', string $password = null)
     {
@@ -315,7 +315,7 @@ class MySQL extends Driver
         return $rs;
     }
 
-    protected function arrayToWhere($data)
+    protected function arrayToWhere(array $data) : string
     {
         $t = $this->arrayToEqual($data);
         if ($t != '') {
@@ -348,7 +348,7 @@ class MySQL extends Driver
         return $t;
     }
 
-    protected static function arrayToSelect($data)
+    protected static function arrayToSelect(array $data):string
     {
         $t = '';
         foreach ($data as $value) {

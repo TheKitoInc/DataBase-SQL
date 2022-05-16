@@ -163,7 +163,7 @@ class MySQL extends Driver implements SQLInterface
         }
     }
 
-    public function command(string $command)
+    public function command(string $command): void
     {
         try {
             $t = microtime(true);
@@ -174,7 +174,6 @@ class MySQL extends Driver implements SQLInterface
 
             \Kito\Logger::getInstance()->debug("COMMAND ($t): ".$command);
 
-            return true;
         } catch (Exception $e) {
             throw new CommandException($command, $e->getMessage(), $e->getCode());
         }

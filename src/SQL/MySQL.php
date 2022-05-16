@@ -173,7 +173,6 @@ class MySQL extends Driver implements SQLInterface
             $t = round(microtime(true) - $t, 3);
 
             \Kito\Logger::getInstance()->debug("COMMAND ($t): ".$command);
-
         } catch (Exception $e) {
             throw new CommandException($command, $e->getMessage(), $e->getCode());
         }
